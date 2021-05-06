@@ -21,7 +21,7 @@ public class Client extends AbstractPersistable {
 
         Client client = (Client) o;
 
-        return name.equals(client.name);
+        return id.equals(client.getId());
     }
 
     @Override
