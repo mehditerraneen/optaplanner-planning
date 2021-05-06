@@ -69,4 +69,9 @@ public class Passage extends AbstractPersistable {
         return (assignedEmployee.getDaysOffList().contains(getStartDateTime().toLocalDate()) ? true : false);
     }
 
+    @JsonIgnore
+    public boolean doesEmployeeAcceptClientAssignment() {
+        return assignedEmployee.getClientsWhereCannotGo().contains(client) ? true: false;
+    }
+
 }

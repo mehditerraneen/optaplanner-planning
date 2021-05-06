@@ -1,7 +1,5 @@
 package com.opefitoo.optaplannerplanning.sur.model;
 
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -10,8 +8,10 @@ public class Employee {
     private String name;
 
     private List<LocalDate> daysOffList;
-//    private List<Client> clientsWhereCannotGo;
-    private int maxContratualHours;
+
+    private List<Client> clientsWhereCannotGo;
+
+    private int maxContractualHours;
 
     public String getName() {
         return name;
@@ -21,12 +21,12 @@ public class Employee {
         this.name = name;
     }
 
-    public int getMaxContratualHours() {
-        return maxContratualHours;
+    public int getMaxContractualHours() {
+        return maxContractualHours;
     }
 
-    public void setMaxContratualHours(int maxContratualHours) {
-        this.maxContratualHours = maxContratualHours;
+    public void setMaxContractualHours(int maxContractualHours) {
+        this.maxContractualHours = maxContractualHours;
     }
 
     public List<LocalDate> getDaysOffList() {
@@ -37,5 +37,11 @@ public class Employee {
         this.daysOffList = daysOffList;
     }
 
+    public List<Client> getClientsWhereCannotGo() {
+        return clientsWhereCannotGo;
+    }
 
+    public void setClientsWhereCannotGo(List<Client> clientsWhereCannotGo) {
+        this.clientsWhereCannotGo = clientsWhereCannotGo;
+    }
 }

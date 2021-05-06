@@ -1,7 +1,6 @@
 package com.opefitoo.optaplannerplanning.sur.score;
 
 import com.opefitoo.optaplannerplanning.sur.model.Passage;
-import org.apache.tomcat.util.bcel.Const;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -16,17 +15,18 @@ public class TourneeConstraintProvider implements ConstraintProvider {
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[] {
-                minizeHoursPerEmployee(constraintFactory),
+                minimizeHoursPerEmployee(constraintFactory),
                 passageConflict(constraintFactory),
-                respectEmployeeDayOffs(constraintFactory)
+                respectEmployeeDayOffs(constraintFactory),
+                respectEmployeeClientsCannotGo(constraintFactory)
         };
     }
 
-    private Constraint minizeHoursPerEmployee(ConstraintFactory constraintFactory) {
+    private Constraint minimizeHoursPerEmployee(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
-                .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContratualHours()))
-                .penalize("totalMaxHours", HardSoftScore.ONE_HARD, ((employee, durationInMn) -> durationInMn - employee.getMaxContratualHours()));
+                .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContractualHours()))
+                .penalize("totalMaxHours", HardSoftScore.ONE_HARD, ((employee, durationInMn) -> durationInMn - employee.getMaxContractualHours()));
     }
 
     private Constraint passageConflict(ConstraintFactory constraintFactory) {
@@ -40,6 +40,12 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         return constraintFactory.from(Passage.class)
                 .filter(Passage::isAssignedEmployeeOff)
                 .penalize("Employee is day Off", HardSoftScore.ONE_HARD, Passage::getDurationInMn);
+    }
+
+    private Constraint respectEmployeeClientsCannotGo(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(Passage.class)
+                .filter(Passage::doesEmployeeAcceptClientAssignment)
+                .penalize("Employee does not accept to go to client", HardSoftScore.ONE_HARD, Passage::getDurationInMn);
     }
 
 }
