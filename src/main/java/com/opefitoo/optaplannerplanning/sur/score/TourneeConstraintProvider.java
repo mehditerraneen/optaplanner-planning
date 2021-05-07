@@ -39,7 +39,8 @@ public class TourneeConstraintProvider implements ConstraintProvider {
     private Constraint respectEmployeeDayOffs(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .filter(Passage::isAssignedEmployeeOff)
-                .penalize("Employee is day Off", HardSoftScore.ONE_HARD, Passage::getDurationInMn);
+                .penalize("Employee is day Off", HardSoftScore.ONE_HARD,
+                        passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn());
     }
 
     private Constraint respectEmployeeClientsCannotGo(ConstraintFactory constraintFactory) {
