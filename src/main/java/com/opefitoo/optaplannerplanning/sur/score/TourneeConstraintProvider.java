@@ -6,9 +6,7 @@ import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
-import static org.optaplanner.core.api.score.stream.Joiners.overlapping;
-import static org.optaplanner.core.api.score.stream.Joiners.equal;
-
+import static org.optaplanner.core.api.score.stream.Joiners.*;
 
 
 public class TourneeConstraintProvider implements ConstraintProvider {
@@ -47,5 +45,12 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 .filter(Passage::doesEmployeeAcceptClientAssignment)
                 .penalize("Employee does not accept to go to client", HardSoftScore.ONE_HARD, Passage::getDurationInMn);
     }
+
+//    private Constraint employeeShouldWorkEitherMorningOrEvening(ConstraintFactory constraintFactory) {
+//        return constraintFactory.from(Passage.class)
+//                .groupBy(Passage::getAssignedEmployee, Passage::isMorningShift)
+//                .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContractualHours()))
+//                .penalize("totalMaxHours", HardSoftScore.ONE_HARD, ((employee, durationInMn) -> durationInMn - employee.getMaxContractualHours()));
+//    }
 
 }

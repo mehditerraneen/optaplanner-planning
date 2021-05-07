@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @PlanningEntity
 public class Passage extends AbstractPersistable {
@@ -74,6 +76,20 @@ public class Passage extends AbstractPersistable {
         if(client != null && assignedEmployee.getClientsWhereCannotGo() != null) {
             return assignedEmployee.getClientsWhereCannotGo().contains(client);
         }
+        return false;
+    }
+
+    @JsonIgnore
+    public boolean isMorningShift() {
+        if(getStartDateTime().toLocalTime().isBefore(LocalTime.parse("15:00:00")))
+            return true;
+        return false;
+    }
+
+    @JsonIgnore
+    public boolean isWeekend() {
+        if(getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY || getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY)
+            return true;
         return false;
     }
 
