@@ -78,7 +78,7 @@ public class Passage extends AbstractPersistable {
 
     @JsonIgnore
     public boolean isMorningShift() {
-        if(getStartDateTime().toLocalTime().isBefore(LocalTime.parse("15:00:00")))
+        if(calculateEndTime().toLocalTime().isBefore(LocalTime.parse("15:00:00")))
             return true;
         return false;
     }
