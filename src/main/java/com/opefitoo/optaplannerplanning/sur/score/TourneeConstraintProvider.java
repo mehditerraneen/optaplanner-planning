@@ -68,7 +68,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, Passage::getLocalDate, count())
                 .filter(((employee, localDate, count) -> count > 19))
-                .penalize("totalMaxHours", HardSoftScore.ONE_HARD,
+                .penalize("Respect max number of open days", HardSoftScore.ONE_HARD,
                         ((employee, localDate, count) -> (count - 19) * employee.getMaxContractualHours() ));
     }
 
