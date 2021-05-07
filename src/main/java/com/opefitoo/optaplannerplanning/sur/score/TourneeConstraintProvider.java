@@ -1,7 +1,6 @@
 package com.opefitoo.optaplannerplanning.sur.score;
 
 import com.opefitoo.optaplannerplanning.sur.model.Passage;
-import com.opefitoo.optaplannerplanning.sur.model.Tournee;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -21,7 +20,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 respectEmployeeDayOffs(constraintFactory),
                 respectEmployeeClientsCannotGo(constraintFactory),
                 employeeShouldWorkEitherMorningOrEvening(constraintFactory),
-                respectMaxNumberOfOPenDaysPermonth(constraintFactory)
+                respectMaxNumberOfOPenDaysPerMonth(constraintFactory)
         };
     }
 
@@ -49,7 +48,8 @@ public class TourneeConstraintProvider implements ConstraintProvider {
     private Constraint respectEmployeeClientsCannotGo(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .filter(Passage::doesEmployeeAcceptClientAssignment)
-                .penalize("Employee does not accept to go to client", HardSoftScore.ONE_HARD, Passage::getDurationInMn);
+                .penalize("Employee does not accept to go to client", HardSoftScore.ONE_HARD,
+                        (passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn()));
     }
 
     private Constraint employeeShouldWorkEitherMorningOrEvening(ConstraintFactory constraintFactory) {
@@ -64,7 +64,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                                 * passage1.getAssignedEmployee().getMaxContractualHours());
     }
 
-    private Constraint respectMaxNumberOfOPenDaysPermonth(ConstraintFactory constraintFactory) {
+    private Constraint respectMaxNumberOfOPenDaysPerMonth(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, Passage::getLocalDate, count())
                 .filter(((employee, localDate, count) -> count > 19))
