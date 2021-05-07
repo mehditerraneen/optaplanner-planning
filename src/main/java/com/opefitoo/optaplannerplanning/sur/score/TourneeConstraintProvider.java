@@ -54,11 +54,10 @@ public class TourneeConstraintProvider implements ConstraintProvider {
 
      Constraint employeeShouldWorkEitherMorningOrEvening(ConstraintFactory constraintFactory) {
         return constraintFactory.fromUniquePair(Passage.class,
-                equal(Passage::isNotWeekend),
                 equal(Passage::getLocalDate),
                 equal(Passage::getAssignedEmployee))
                 .filter((passage1,
-                         passage2) -> (passage1.isMorningShift() && !passage2.isMorningShift()))
+                         passage2) -> (passage1.isNotWeekend() && passage1.isMorningShift() && !passage2.isMorningShift()))
                 .penalize("Pas travailler les coupés", HardSoftScore.ONE_HARD,
                         (passage1, passage2) -> (passage1.getDurationInMn() + passage2.getDurationInMn())
                                 * passage1.getAssignedEmployee().getMaxContractualHours());
