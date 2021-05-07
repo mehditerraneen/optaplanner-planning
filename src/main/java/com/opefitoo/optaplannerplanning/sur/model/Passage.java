@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 
 @PlanningEntity
 public class Passage extends AbstractPersistable {
@@ -92,5 +89,18 @@ public class Passage extends AbstractPersistable {
             return true;
         return false;
     }
+
+    public boolean isNotWeekend() {
+        return !isWeekend();
+    }
+
+    public boolean isOnSameDayAs(Passage other) {
+        return startDateTime.toLocalDate().equals(other.getStartDateTime().toLocalDate());
+    }
+
+    public LocalDate getLocalDate() {
+        return startDateTime.toLocalDate();
+    }
+
 
 }
