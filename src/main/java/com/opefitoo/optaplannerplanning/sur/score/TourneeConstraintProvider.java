@@ -6,6 +6,8 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
+
+import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 import static org.optaplanner.core.api.score.stream.Joiners.*;
 
@@ -18,7 +20,8 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 passageConflict(constraintFactory),
                 respectEmployeeDayOffs(constraintFactory),
                 respectEmployeeClientsCannotGo(constraintFactory),
-                employeeShouldWorkEitherMorningOrEvening(constraintFactory)
+                employeeShouldWorkEitherMorningOrEvening(constraintFactory),
+                respectMaxNumberOfOPenDaysPermonth(constraintFactory)
         };
     }
 
@@ -60,5 +63,14 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                         (passage1, passage2) -> (passage1.getDurationInMn() + passage2.getDurationInMn())
                                 * passage1.getAssignedEmployee().getMaxContractualHours());
     }
+
+    private Constraint respectMaxNumberOfOPenDaysPermonth(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(Passage.class)
+                .groupBy(Passage::getAssignedEmployee, Passage::getLocalDate, count())
+                .filter(((employee, localDate, count) -> count > 19))
+                .penalize("totalMaxHours", HardSoftScore.ONE_HARD,
+                        ((employee, localDate, count) -> (count - 19) * employee.getMaxContractualHours() ));
+    }
+
 
 }
