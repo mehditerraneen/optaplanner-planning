@@ -21,8 +21,8 @@ public class TrouneeSolverController {
 
     @PostMapping("/solve")
     public Tournee solve(@RequestBody Tournee problem) {
-        UUID probleId = UUID.randomUUID();
-        SolverJob<Tournee, UUID> solverJob = solverManager.solve(probleId, problem);
+        UUID problemId = UUID.randomUUID();
+        SolverJob<Tournee, UUID> solverJob = solverManager.solve(problemId, problem);
         Tournee solution;
         try {
             solution = solverJob.getFinalBestSolution();

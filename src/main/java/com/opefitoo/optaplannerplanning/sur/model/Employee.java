@@ -1,11 +1,19 @@
 package com.opefitoo.optaplannerplanning.sur.model;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 
 public class Employee {
+
+
+    @Value("classpath:data/holidays.json")
+    Resource holidayResource;
+
     private String name;
 
     private List<LocalDate> daysOffList;

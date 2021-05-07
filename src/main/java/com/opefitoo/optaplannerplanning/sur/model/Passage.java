@@ -1,6 +1,7 @@
 package com.opefitoo.optaplannerplanning.sur.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
@@ -88,6 +89,11 @@ public class Passage extends AbstractPersistable {
         if(getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY || getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY)
             return true;
         return false;
+    }
+
+    public boolean isBankHoliday() {
+        new ObjectMapper().readValue(assignedEmployee.holidayResource.toString(), Holiday.class)
+        if(assignedEmployee.holidayResource)
     }
 
     public boolean isNotWeekend() {

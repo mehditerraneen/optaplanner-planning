@@ -50,6 +50,10 @@
 			</exclusions>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.optaplanner</groupId>
+			<artifactId>optaplanner-test</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

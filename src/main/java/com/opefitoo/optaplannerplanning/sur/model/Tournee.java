@@ -1,12 +1,10 @@
 package com.opefitoo.optaplannerplanning.sur.model;
 
-import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
-import org.optaplanner.core.api.domain.solution.PlanningScore;
-import org.optaplanner.core.api.domain.solution.PlanningSolution;
-import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
+import org.optaplanner.core.api.domain.solution.*;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @PlanningSolution
@@ -18,6 +16,10 @@ public class Tournee {
     @ProblemFactCollectionProperty
     @ValueRangeProvider(id = "employee")
     private List<Employee> employees;
+
+    @ProblemFactProperty
+    @ValueRangeProvider(id = "planningResource")
+    private PlanningResource planningResource;
 
     @PlanningScore
     private HardSoftScore score;
@@ -46,4 +48,11 @@ public class Tournee {
         this.score = score;
     }
 
+    public PlanningResource getPlanningResource() {
+        return planningResource;
+    }
+
+    public void setPlanningResource(PlanningResource planningResource) {
+        this.planningResource = planningResource;
+    }
 }
