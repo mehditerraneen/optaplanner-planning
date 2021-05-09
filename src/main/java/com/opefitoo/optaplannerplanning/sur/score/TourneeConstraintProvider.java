@@ -68,9 +68,9 @@ public class TourneeConstraintProvider implements ConstraintProvider {
      Constraint respectMaxNumberOfOPenDaysPerMonth(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, Passage::getMonth, count())
-                .filter(((employee, month, count) -> count > 19))
+                .filter(((employee, month, count) -> count > 20))
                 .penalize("Respect max number of open days", HardSoftScore.ONE_HARD,
-                        ((employee, month, count) -> (count - 19) * employee.getMaxContractualHours()   ));
+                        ((employee, month, count) -> (count - 20) * employee.getMaxContractualHours()   ));
     }
 
 
