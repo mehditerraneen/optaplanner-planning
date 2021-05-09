@@ -6,6 +6,8 @@ import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 
+import java.util.stream.Collectors;
+
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 import static org.optaplanner.core.api.score.stream.Joiners.*;
@@ -63,12 +65,12 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                                 * passage1.getAssignedEmployee().getMaxContractualHours());
     }
 
-    private Constraint respectMaxNumberOfOPenDaysPerMonth(ConstraintFactory constraintFactory) {
+     Constraint respectMaxNumberOfOPenDaysPerMonth(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
-                .groupBy(Passage::getAssignedEmployee, Passage::getLocalDate, count())
-                .filter(((employee, localDate, count) -> count > 19))
+                .groupBy(Passage::getAssignedEmployee, Passage::getMonth, count())
+                .filter(((employee, month, count) -> count > 19))
                 .penalize("Respect max number of open days", HardSoftScore.ONE_HARD,
-                        ((employee, localDate, count) -> (count - 19) * employee.getMaxContractualHours() ));
+                        ((employee, month, count) -> (count - 19) * employee.getMaxContractualHours()   ));
     }
 
 

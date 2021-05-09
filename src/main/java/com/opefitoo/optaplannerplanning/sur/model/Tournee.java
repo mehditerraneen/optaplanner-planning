@@ -17,9 +17,9 @@ public class Tournee {
     @ValueRangeProvider(id = "employee")
     private List<Employee> employees;
 
-    @ProblemFactProperty
-    @ValueRangeProvider(id = "planningResource")
-    private PlanningResource planningResource;
+//    @ProblemFactProperty
+//    @ValueRangeProvider(id = "planningResource")
+//    private PlanningResource planningResource;
 
     @PlanningScore
     private HardSoftScore score;
@@ -48,11 +48,11 @@ public class Tournee {
         this.score = score;
     }
 
-    public PlanningResource getPlanningResource() {
-        return planningResource;
-    }
-
-    public void setPlanningResource(PlanningResource planningResource) {
-        this.planningResource = planningResource;
-    }
+//    public PlanningResource getPlanningResource() {
+//        return planningResource;
+//    }
+//
+//    public void setPlanningResource(PlanningResource planningResource) {
+//        this.planningResource = planningResource;
+//    }
 }

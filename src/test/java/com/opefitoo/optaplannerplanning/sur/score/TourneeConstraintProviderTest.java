@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TourneeConstraintProviderTest {
 
@@ -68,6 +70,34 @@ public class TourneeConstraintProviderTest {
 
         constraintVerifier.verifyThat(TourneeConstraintProvider::employeeShouldWorkEitherMorningOrEvening)
                 .given(passageMorning, passageEvening).penalizes();
+
+    }
+
+    @Test
+    public void testRespectMaxNumberOfOPenDaysPerMonth(){
+
+        Employee e1 = new Employee();
+        e1.setName("e1");
+
+
+        List<Passage> passageList = new ArrayList<>();
+
+        LocalDateTime datesOfMay = LocalDateTime.parse("2021-05-01T08:00");
+        for(long i = 1L; i < 31L; i++) {
+            Passage passageMorning = new Passage();
+            passageMorning.setId(i);
+            passageMorning.setStartDateTime(datesOfMay);
+            passageMorning.setAssignedEmployee(e1);
+            passageList.add(passageMorning);
+            datesOfMay = datesOfMay.plusDays(1);
+        }
+
+        constraintVerifier.verifyThat(TourneeConstraintProvider::respectMaxNumberOfOPenDaysPerMonth)
+                .given(passageList).penalizes();
+
+//        passageList.
+
+
 
     }
 }
