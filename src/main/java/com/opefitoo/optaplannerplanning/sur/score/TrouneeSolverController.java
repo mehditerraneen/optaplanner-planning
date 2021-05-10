@@ -1,8 +1,7 @@
 package com.opefitoo.optaplannerplanning.sur.score;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.opefitoo.optaplannerplanning.sur.model.Tournee;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -12,9 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/sur-planning")
@@ -37,23 +39,24 @@ public class TrouneeSolverController {
         return solution;
     }
 
-    @PostMapping("/solve-fromcache")
-    public Tournee solveFromCache(@RequestBody Tournee problem) throws ExecutionException {
-        LoadingCache<String, Tournee> solutionCache =
-                CacheBuilder.newBuilder()
-                        .maximumSize(100)                             // maximum 100 records can be cached
-                        .expireAfterAccess(45, TimeUnit.MINUTES)      // cache will expire after 30 minutes of access
-                        .build(new CacheLoader<String, Tournee>() {
-                            @Override
-                            public Tournee load(String id) throws Exception {
-                                return getLatestSolution(id, problem);
-                            }
-                        });
-        return solutionCache.get("id");
+    @PostMapping("/launch")
+    public Tournee solveFromCache(@RequestBody Tournee problem) throws ExecutionException, IOException {
+        computeSolutinAndWriteToDisk(problem);
+        return null;
+    }
+
+    @PostMapping("/read")
+    public Tournee readFromCache(@RequestBody Tournee problem) throws ExecutionException, IOException {
+
+        String path = "src/main/resources/data/solution.json";
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
+        Gson gson = new Gson();
+        Tournee js = gson.fromJson(bufferedReader, Tournee.class);
+        return js;
     }
 
 
-    private Tournee getLatestSolution(String solutionId, Tournee problem){
+    private void computeSolutinAndWriteToDisk(Tournee problem) throws IOException {
         UUID problemId = UUID.randomUUID();
         SolverJob<Tournee, UUID> solverJob = solverManager.solve(problemId, problem);
         Tournee solution;
@@ -64,7 +67,14 @@ public class TrouneeSolverController {
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("solving failed.", e);
         }
-        return solution;
+        //return solution;
+        FileWriter fileWriter = new FileWriter("src/main/resources/data/solution.json");
+        //PrintWriter printWriter = new PrintWriter(fileWriter);
+        Gson gson = new GsonBuilder().create();
+        gson.toJson(solution, fileWriter);
+        fileWriter.close();
+        System.out.println("Solution found: " + solution);
+
     }
 
 }
