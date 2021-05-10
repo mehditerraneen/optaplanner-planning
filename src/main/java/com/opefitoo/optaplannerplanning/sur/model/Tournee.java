@@ -2,6 +2,7 @@ package com.opefitoo.optaplannerplanning.sur.model;
 
 import org.optaplanner.core.api.domain.solution.*;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
+import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class Tournee {
 //    private PlanningResource planningResource;
 
     @PlanningScore
-    private HardSoftScore score;
+    private HardMediumSoftScore score;
 
     public List<Passage> getPassageList() {
         return passageList;
@@ -40,11 +41,11 @@ public class Tournee {
         this.employees = employees;
     }
 
-    public HardSoftScore getScore() {
+    public HardMediumSoftScore getScore() {
         return score;
     }
 
-    public void setScore(HardSoftScore score) {
+    public void setScore(HardMediumSoftScore score) {
         this.score = score;
     }
 

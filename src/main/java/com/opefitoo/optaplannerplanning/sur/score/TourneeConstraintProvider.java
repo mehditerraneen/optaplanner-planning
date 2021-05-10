@@ -2,7 +2,6 @@ package com.opefitoo.optaplannerplanning.sur.score;
 
 import com.opefitoo.optaplannerplanning.sur.model.Passage;
 import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
@@ -34,7 +33,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
                 .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContractualHours()))
-                .penalize("totalMaxHours", HardSoftScore.ONE_HARD,
+                .penalize("totalMaxHours", HardMediumSoftScore.ONE_HARD,
                         ((employee, durationInMn) -> pow(abs(durationInMn - employee.getMaxContractualHours()), 2)));
     }
 
@@ -43,7 +42,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
                 .filter(((employee, durationInMn) -> pow(abs(durationInMn - employee.getMaxContractualHours()), 2) / 100 > 0.10))
-                .penalize("Total Hours Close to Contractual Hours", HardSoftScore.ONE_SOFT,
+                .penalize("Total Hours Close to Contractual Hours", HardMediumSoftScore.ONE_SOFT,
                         ((employee, durationInMn) ->  abs(durationInMn - employee.getMaxContractualHours())* abs(durationInMn - employee.getMaxContractualHours())));
     }
 
@@ -52,20 +51,20 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         return constraintFactory.fromUniquePair(Passage.class,
                 equal(Passage::getAssignedEmployee),
                 overlapping(p -> p.getStartDateTime(), p -> p.calculateEndTime()))
-        .penalize("Overlap in passages", HardSoftScore.ONE_HARD, Passage::getOverlapInMinutes);
+        .penalize("Overlap in passages", HardMediumSoftScore.ONE_HARD, Passage::getOverlapInMinutes);
     }
 
     private Constraint respectEmployeeDayOffs(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .filter(Passage::isAssignedEmployeeOff)
-                .penalize("Employee is day Off", HardSoftScore.ONE_HARD,
+                .penalize("Employee is day Off", HardMediumSoftScore.ONE_HARD,
                         passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn());
     }
 
     private Constraint respectEmployeeClientsCannotGo(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .filter(Passage::doesEmployeeAcceptClientAssignment)
-                .penalize("Employee does not accept to go to client", HardSoftScore.ONE_HARD,
+                .penalize("Employee does not accept to go to client", HardMediumSoftScore.ONE_HARD,
                         (passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn()));
     }
 
@@ -75,7 +74,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 equal(Passage::getAssignedEmployee))
                 .filter((passage1,
                          passage2) -> (passage1.isNotWeekend() && passage1.isMorningShift() && !passage2.isMorningShift()))
-                .penalize("Pas travailler les coupés", HardSoftScore.ONE_HARD,
+                .penalize("Pas travailler les coupés", HardMediumSoftScore.ONE_HARD,
                         (passage1, passage2) -> (passage1.getDurationInMn() + passage2.getDurationInMn())
                                 * passage1.getAssignedEmployee().getMaxContractualHours());
     }
@@ -84,7 +83,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, Passage::getMonth, count())
                 .filter(((employee, month, count) -> count > 19))
-                .penalize("Respect max number of open days", HardSoftScore.ONE_HARD,
+                .penalize("Respect max number of open days", HardMediumSoftScore.ONE_HARD,
                         ((employee, month, count) -> (count - 19) * employee.getMaxContractualHours()   ));
     }
 
