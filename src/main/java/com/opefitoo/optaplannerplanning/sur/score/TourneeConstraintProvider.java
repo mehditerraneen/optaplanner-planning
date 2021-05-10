@@ -6,10 +6,9 @@ import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 
-import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.pow;
+import static org.apache.commons.math3.util.ArithmeticUtils.pow;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 import static org.optaplanner.core.api.score.stream.Joiners.*;
@@ -20,7 +19,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[] {
                 minimizeHoursPerEmployee(constraintFactory),
-                closestToHoursPerEmployee(constraintFactory),
+//                closestToHoursPerEmployee(constraintFactory),
                 passageConflict(constraintFactory),
                 respectEmployeeDayOffs(constraintFactory),
                 respectEmployeeClientsCannotGo(constraintFactory),
@@ -33,7 +32,8 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
                 .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContractualHours()))
-                .penalize("totalMaxHours", HardSoftScore.ONE_HARD, ((employee, durationInMn) -> durationInMn - employee.getMaxContractualHours()));
+                .penalize("totalMaxHours", HardSoftScore.ONE_HARD,
+                        ((employee, durationInMn) -> pow(abs(durationInMn - employee.getMaxContractualHours()), 2)));
     }
 
 
