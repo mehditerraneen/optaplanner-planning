@@ -9,6 +9,7 @@ import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.pow;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 import static org.optaplanner.core.api.score.stream.Joiners.*;
@@ -41,7 +42,9 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
                 .filter(((employee, durationInMn) -> abs(durationInMn - employee.getMaxContractualHours()) / 100 < 0.25))
                 .reward("Total Hours Close to Contractual Hours", HardSoftScore.ONE_HARD,
-                        ((employee, durationInMn) ->  employee.getMaxContractualHours() / abs(1 - (durationInMn - employee.getMaxContractualHours()))));
+                        ((employee, durationInMn) ->  
+                                employee.getMaxContractualHours() / (1 -
+                                        (abs((durationInMn - employee.getMaxContractualHours())*(durationInMn - employee.getMaxContractualHours()))))));
     }
 
 
