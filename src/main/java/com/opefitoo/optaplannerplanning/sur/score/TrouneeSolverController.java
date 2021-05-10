@@ -15,12 +15,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/sur-planning")
 public class TrouneeSolverController {
+
+    private static Map<Long,Tournee> solutionMap = new HashMap<>();
 
     @Autowired
     private SolverManager<Tournee, UUID> solverManager;
@@ -48,11 +52,11 @@ public class TrouneeSolverController {
     @PostMapping("/read")
     public Tournee readFromCache(@RequestBody Tournee problem) throws ExecutionException, IOException {
 
-        String path = "src/main/resources/data/solution.json";
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
-        Gson gson = new Gson();
-        Tournee js = gson.fromJson(bufferedReader, Tournee.class);
-        return js;
+//        String path = "src/main/resources/data/solution.json";
+//        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
+//        Gson gson = new Gson();
+//        Tournee js = gson.fromJson(bufferedReader, Tournee.class);
+        return solutionMap.get(1L);
     }
 
 
@@ -62,17 +66,18 @@ public class TrouneeSolverController {
         Tournee solution;
         try {
             solution = solverJob.getFinalBestSolution();
-            System.out.println("Solution found" + solution);
+//            System.out.println("Solution found" + solution);
 
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("solving failed.", e);
         }
         //return solution;
-        FileWriter fileWriter = new FileWriter("src/main/resources/data/solution.json");
-        //PrintWriter printWriter = new PrintWriter(fileWriter);
-        Gson gson = new GsonBuilder().create();
-        gson.toJson(solution, fileWriter);
-        fileWriter.close();
+        solutionMap.put(1L, solution);
+//        FileWriter fileWriter = new FileWriter("src/main/resources/data/solution.json");
+//        //PrintWriter printWriter = new PrintWriter(fileWriter);
+//        Gson gson = new GsonBuilder().create();
+//        gson.toJson(solution, fileWriter);
+//        fileWriter.close();
         System.out.println("Solution found: " + solution);
 
     }
