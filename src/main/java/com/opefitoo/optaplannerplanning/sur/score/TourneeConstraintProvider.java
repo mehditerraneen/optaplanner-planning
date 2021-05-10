@@ -8,6 +8,7 @@ import org.optaplanner.core.api.score.stream.ConstraintProvider;
 
 import java.util.stream.Collectors;
 
+import static java.lang.Math.abs;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 import static org.optaplanner.core.api.score.stream.Joiners.*;
@@ -18,6 +19,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[] {
                 minimizeHoursPerEmployee(constraintFactory),
+                closestToHoursPerEmployee(constraintFactory),
                 passageConflict(constraintFactory),
                 respectEmployeeDayOffs(constraintFactory),
                 respectEmployeeClientsCannotGo(constraintFactory),
@@ -26,12 +28,22 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         };
     }
 
-    private Constraint minimizeHoursPerEmployee(ConstraintFactory constraintFactory) {
+     Constraint minimizeHoursPerEmployee(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
                 .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContractualHours()))
                 .penalize("totalMaxHours", HardSoftScore.ONE_HARD, ((employee, durationInMn) -> durationInMn - employee.getMaxContractualHours()));
     }
+
+
+    Constraint closestToHoursPerEmployee(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(Passage.class)
+                .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
+                .filter(((employee, durationInMn) -> abs(durationInMn - employee.getMaxContractualHours()) / 100 < 0.15))
+                .reward("Total Hours Close to Contractual Hours", HardSoftScore.ONE_HARD,
+                        ((employee, durationInMn) ->  employee.getMaxContractualHours() / abs(durationInMn - employee.getMaxContractualHours())));
+    }
+
 
     private Constraint passageConflict(ConstraintFactory constraintFactory) {
         return constraintFactory.fromUniquePair(Passage.class,
@@ -68,9 +80,9 @@ public class TourneeConstraintProvider implements ConstraintProvider {
      Constraint respectMaxNumberOfOPenDaysPerMonth(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, Passage::getMonth, count())
-                .filter(((employee, month, count) -> count > 20))
+                .filter(((employee, month, count) -> count > 19))
                 .penalize("Respect max number of open days", HardSoftScore.ONE_HARD,
-                        ((employee, month, count) -> (count - 20) * employee.getMaxContractualHours()   ));
+                        ((employee, month, count) -> (count - 19) * employee.getMaxContractualHours()   ));
     }
 
 
