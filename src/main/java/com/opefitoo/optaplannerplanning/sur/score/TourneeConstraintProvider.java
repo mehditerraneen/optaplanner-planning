@@ -89,7 +89,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
     }
 
     Constraint tryToAvoidVirtualEmployee(ConstraintFactory constraintFactory) {
-        constraintFactory.from(Passage.class)
+        return constraintFactory.from(Passage.class)
                 .filter(passage -> passage.getAssignedEmployee().isVirtual())
                 .penalize("Employee is Virtual", HardMediumSoftScore.ONE_MEDIUM,
                         passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn());
