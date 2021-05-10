@@ -40,9 +40,9 @@ public class TourneeConstraintProvider implements ConstraintProvider {
     Constraint closestToHoursPerEmployee(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
-                .filter(((employee, durationInMn) -> pow(abs(durationInMn - employee.getMaxContractualHours()), 2) / 100 < 0.05))
-                .reward("Total Hours Close to Contractual Hours", HardSoftScore.ONE_HARD,
-                        ((employee, durationInMn) ->  employee.getMaxContractualHours() / abs(1 - (durationInMn - employee.getMaxContractualHours()))));
+                .filter(((employee, durationInMn) -> pow(abs(durationInMn - employee.getMaxContractualHours()), 2) / 100 > 0.05))
+                .penalize("Total Hours Close to Contractual Hours", HardSoftScore.ONE_SOFT,
+                        ((employee, durationInMn) ->  abs((durationInMn - employee.getMaxContractualHours())*(durationInMn - employee.getMaxContractualHours()))));
     }
 
 
