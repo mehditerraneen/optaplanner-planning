@@ -1,6 +1,7 @@
 package com.opefitoo.optaplannerplanning.sur.score;
 
 import com.opefitoo.optaplannerplanning.sur.model.Passage;
+import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -24,7 +25,8 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 respectEmployeeDayOffs(constraintFactory),
                 respectEmployeeClientsCannotGo(constraintFactory),
                 employeeShouldWorkEitherMorningOrEvening(constraintFactory),
-                respectMaxNumberOfOPenDaysPerMonth(constraintFactory)
+                respectMaxNumberOfOPenDaysPerMonth(constraintFactory),
+                tryToAvoidVirtualEmployee(constraintFactory),
         };
     }
 
@@ -84,6 +86,13 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 .filter(((employee, month, count) -> count > 19))
                 .penalize("Respect max number of open days", HardSoftScore.ONE_HARD,
                         ((employee, month, count) -> (count - 19) * employee.getMaxContractualHours()   ));
+    }
+
+    Constraint tryToAvoidVirtualEmployee(ConstraintFactory constraintFactory) {
+        constraintFactory.from(Passage.class)
+                .filter(passage -> passage.getAssignedEmployee().isVirtual())
+                .penalize("Employee is Virtual", HardMediumSoftScore.ONE_MEDIUM,
+                        passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn());
     }
 
 

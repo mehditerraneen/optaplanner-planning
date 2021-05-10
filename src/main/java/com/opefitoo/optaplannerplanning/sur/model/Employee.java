@@ -16,6 +16,8 @@ public class Employee {
 
     private String name;
 
+    private boolean virtual;
+
     private List<LocalDate> daysOffList;
 
     private List<Client> clientsWhereCannotGo;
@@ -52,6 +54,14 @@ public class Employee {
 
     public void setClientsWhereCannotGo(List<Client> clientsWhereCannotGo) {
         this.clientsWhereCannotGo = clientsWhereCannotGo;
+    }
+
+    public boolean isVirtual() {
+        return virtual;
+    }
+
+    public void setVirtual(boolean virtual) {
+        this.virtual = virtual;
     }
 
     @Override
