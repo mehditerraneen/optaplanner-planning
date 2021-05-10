@@ -54,6 +54,12 @@
 			<groupId>org.optaplanner</groupId>
 			<artifactId>optaplanner-test</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>23.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
