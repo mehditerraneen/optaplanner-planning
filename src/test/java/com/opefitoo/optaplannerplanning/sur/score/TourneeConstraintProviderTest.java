@@ -123,6 +123,32 @@ public class TourneeConstraintProviderTest {
 
     }
 
+    @Test
+    public void testClosestToHoursPerEmployee(){
+
+        Employee e1 = new Employee();
+        e1.setName("e1");
+        e1.setMaxContractualHours(200);
+
+
+        List<Passage> passageList = new ArrayList<>();
+
+        LocalDateTime datesOfMay = LocalDateTime.parse("2021-05-01T08:00");
+        for(long i = 1L; i < 31L; i++) {
+            Passage passageMorning = new Passage();
+            passageMorning.setId(i);
+            passageMorning.setStartDateTime(datesOfMay);
+            passageMorning.setAssignedEmployee(e1);
+            passageMorning.setDurationInMn(90);
+            passageList.add(passageMorning);
+            datesOfMay = datesOfMay.plusDays(1);
+        }
+
+        constraintVerifier.verifyThat(TourneeConstraintProvider::closestToHoursPerEmployee)
+                .given(passageList.get(0), passageList.get(1)).rewards();
+
+    }
+
 
 
 }
