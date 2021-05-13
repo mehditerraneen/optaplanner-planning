@@ -100,10 +100,6 @@ public class Passage extends AbstractPersistable {
         return !isWeekend();
     }
 
-    public boolean isOnSameDayAs(Passage other) {
-        return startDateTime.toLocalDate().equals(other.getStartDateTime().toLocalDate());
-    }
-
     public LocalDate getLocalDate() {
         return startDateTime.toLocalDate();
     }
