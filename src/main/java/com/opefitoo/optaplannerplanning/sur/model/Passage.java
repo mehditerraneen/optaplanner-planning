@@ -5,6 +5,8 @@ import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @PlanningEntity
 public class Passage extends AbstractPersistable {
@@ -89,7 +91,7 @@ public class Passage extends AbstractPersistable {
 
     @JsonIgnore
     public boolean isWeekend() {
-        if(getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY || getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY)
+        if(getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY || getStartDateTime().getDayOfWeek() == DayOfWeek.SUNDAY)
             return true;
         return false;
     }

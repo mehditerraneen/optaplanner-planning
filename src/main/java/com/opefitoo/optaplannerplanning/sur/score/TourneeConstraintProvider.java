@@ -3,14 +3,14 @@ package com.opefitoo.optaplannerplanning.sur.score;
 import com.opefitoo.optaplannerplanning.sur.model.Passage;
 import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
+import org.optaplanner.core.api.score.stream.ConstraintCollectors;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 
 
 import static java.lang.Math.abs;
 import static org.apache.commons.math3.util.ArithmeticUtils.pow;
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.count;
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
+import static org.optaplanner.core.api.score.stream.ConstraintCollectors.*;
 import static org.optaplanner.core.api.score.stream.Joiners.*;
 
 
@@ -26,6 +26,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 employeeShouldWorkEitherMorningOrEvening(constraintFactory),
                 respectMaxNumberOfOPenDaysPerMonth(constraintFactory),
                 tryToAvoidVirtualEmployee(constraintFactory),
+                ifEmployeeWorkedWeekendAtLeastTwoConsecutiveFreeDays(constraintFactory)
         };
     }
 
@@ -92,6 +93,15 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 .filter(passage -> passage.getAssignedEmployee().isVirtual())
                 .penalize("Employee is Virtual", HardMediumSoftScore.ONE_MEDIUM,
                         passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn());
+    }
+
+    Constraint ifEmployeeWorkedWeekendAtLeastTwoConsecutiveFreeDays(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(Passage.class)
+                .groupBy(Passage::getAssignedEmployee,
+                        ConstraintCollectors.toList(p-> p))
+                .filter((employee, listD) -> employee.tooManyWeekends(listD))
+                .penalize("Too Many weekends worked", HardMediumSoftScore.ONE_HARD,
+                        (employee, passages) -> employee.getMaxContractualHours() * passages.size());
     }
 
 

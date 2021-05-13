@@ -149,6 +149,66 @@ public class TourneeConstraintProviderTest {
 
     }
 
+    @Test
+    public void testIfEmployeeWorkedWeekendAtLeastTwoConsecutiveFreeDays(){
+
+        Employee e1 = new Employee();
+        e1.setName("e1");
+        Passage weeknd1 = new Passage();
+        weeknd1.setId(1L);
+        weeknd1.setStartDateTime(LocalDateTime.parse("2021-05-08T08:00"));
+        weeknd1.setAssignedEmployee(e1);
+
+        Passage weekdnd2 = new Passage();
+        weekdnd2.setId(2L);
+        weekdnd2.setStartDateTime(LocalDateTime.parse("2021-05-08T18:00"));
+        weekdnd2.setAssignedEmployee(e1);
+
+        Passage weekdnd3 = new Passage();
+        weekdnd3.setId(3L);
+        weekdnd3.setStartDateTime(LocalDateTime.parse("2021-05-09T18:00"));
+        weekdnd3.setAssignedEmployee(e1);
+
+        Passage weekdnd4 = new Passage();
+        weekdnd4.setId(4L);
+        weekdnd4.setStartDateTime(LocalDateTime.parse("2021-05-09T19:00"));
+        weekdnd4.setAssignedEmployee(e1);
+
+        Passage weekdnd5 = new Passage();
+        weekdnd5.setId(5L);
+        weekdnd5.setStartDateTime(LocalDateTime.parse("2021-05-15T08:00"));
+        weekdnd5.setAssignedEmployee(e1);
+
+        Passage weekdnd6 = new Passage();
+        weekdnd6.setId(6L);
+        weekdnd6.setStartDateTime(LocalDateTime.parse("2021-05-15T09:00"));
+        weekdnd6.setAssignedEmployee(e1);
+
+        Passage weekdnd7 = new Passage();
+        weekdnd7.setId(7L);
+        weekdnd7.setStartDateTime(LocalDateTime.parse("2021-05-22T09:00"));
+        weekdnd7.setAssignedEmployee(e1);
+
+        Passage weekdnd8 = new Passage();
+        weekdnd8.setId(8L);
+        weekdnd8.setStartDateTime(LocalDateTime.parse("2021-05-23T09:00"));
+        weekdnd8.setAssignedEmployee(e1);
+
+        Passage weekdnd9 = new Passage();
+        weekdnd9.setId(9L);
+        weekdnd9.setStartDateTime(LocalDateTime.parse("2021-05-29T09:00"));
+        weekdnd9.setAssignedEmployee(e1);
+
+        Passage weekdnd10 = new Passage();
+        weekdnd10.setId(10L);
+        weekdnd10.setStartDateTime(LocalDateTime.parse("2021-05-30T09:00"));
+        weekdnd10.setAssignedEmployee(e1);
+
+        constraintVerifier.verifyThat(TourneeConstraintProvider::ifEmployeeWorkedWeekendAtLeastTwoConsecutiveFreeDays)
+                .given(weeknd1, weekdnd2, weekdnd3, weekdnd4, weekdnd5, weekdnd6, weekdnd7, weekdnd8, weekdnd9, weekdnd10).penalizes();
+
+    }
+
 
 
 }

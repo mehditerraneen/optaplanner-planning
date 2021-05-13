@@ -5,7 +5,10 @@ import org.springframework.core.io.Resource;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
+import static java.util.stream.Collectors.groupingBy;
 
 
 public class Employee {
@@ -62,6 +65,12 @@ public class Employee {
 
     public void setVirtual(boolean virtual) {
         this.virtual = virtual;
+    }
+
+    public boolean tooManyWeekends(List<Passage> passageList) {
+        Map<LocalDate, List<Passage>> passages = passageList.stream().filter(Passage::isWeekend)
+                .collect(groupingBy(Passage::getLocalDate));
+        return passages.size() > 6 ? true:false;
     }
 
     @Override
