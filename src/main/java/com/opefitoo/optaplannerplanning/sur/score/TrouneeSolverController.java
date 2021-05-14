@@ -3,6 +3,7 @@ package com.opefitoo.optaplannerplanning.sur.score;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.opefitoo.optaplannerplanning.sur.model.Tournee;
+import com.opefitoo.optaplannerplanning.sur.repo.TourneeRepository;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,12 @@ public class TrouneeSolverController {
 
     @Autowired
     private SolverManager<Tournee, UUID> solverManager;
+
+    @Autowired
+    private SolverManager<Tournee, Long> batchSolverManager;
+
+    @Autowired
+    private TourneeRepository tourneeRepository;
 
     @PostMapping("/solve")
     public Tournee solve(@RequestBody Tournee problem) {
@@ -80,6 +87,14 @@ public class TrouneeSolverController {
 //        fileWriter.close();
         System.out.println("Solution found: " + solution);
 
+    }
+
+
+    @PostMapping("/batch-solve")
+    public void batchSolve(Tournee problem) {
+        batchSolverManager.solveAndListen(tourneeRepository.findMaxId() + 1,
+                tourneeRepository::anotherFindById,
+                tourneeRepository::save);
     }
 
 }

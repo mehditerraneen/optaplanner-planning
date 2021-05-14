@@ -4,12 +4,15 @@ import org.optaplanner.core.api.domain.solution.*;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import javax.persistence.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+@Entity
 @PlanningSolution
-public class Tournee {
+public class Tournee extends AbstractPersistable {
 
     @PlanningEntityCollectionProperty
     private List<Passage> passageList;
@@ -24,6 +27,14 @@ public class Tournee {
 
     @PlanningScore
     private HardMediumSoftScore score;
+
+    public Tournee(Long id) {
+        this.id = id;
+    }
+
+    public Tournee() {
+
+    }
 
     public List<Passage> getPassageList() {
         return passageList;
