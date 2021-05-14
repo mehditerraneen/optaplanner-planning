@@ -1,10 +1,14 @@
 package com.opefitoo.optaplannerplanning.sur.repo;
 
+import com.opefitoo.optaplannerplanning.sur.model.Employee;
+import com.opefitoo.optaplannerplanning.sur.model.Passage;
 import com.opefitoo.optaplannerplanning.sur.model.Tournee;
+import org.assertj.core.util.Lists;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public interface TourneeRepository extends PagingAndSortingRepository<Tournee, Long> {
@@ -18,7 +22,7 @@ public interface TourneeRepository extends PagingAndSortingRepository<Tournee, L
         Optional<Tournee> t = this.findById(id);
         if(t.isPresent())
             return t.get();
-        return new Tournee(id=id);
+        return new Tournee(id, new ArrayList<>(), new ArrayList<>());
     }
 
 }

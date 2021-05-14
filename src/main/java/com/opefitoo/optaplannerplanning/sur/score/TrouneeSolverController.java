@@ -92,7 +92,8 @@ public class TrouneeSolverController {
 
     @PostMapping("/batch-solve")
     public void batchSolve(Tournee problem) {
-        batchSolverManager.solveAndListen(tourneeRepository.findMaxId() + 1,
+        Long id = tourneeRepository.findMaxId();
+        batchSolverManager.solveAndListen(id == null ? 1L :  id+1,
                 tourneeRepository::anotherFindById,
                 tourneeRepository::save);
     }

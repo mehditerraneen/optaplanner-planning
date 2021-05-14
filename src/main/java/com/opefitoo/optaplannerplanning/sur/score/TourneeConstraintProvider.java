@@ -26,7 +26,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 employeeShouldWorkEitherMorningOrEvening(constraintFactory),
                 respectMaxNumberOfOPenDaysPerMonth(constraintFactory),
                 tryToAvoidVirtualEmployee(constraintFactory),
-                ifEmployeeWorkedWeekendAtLeastTwoConsecutiveFreeDays(constraintFactory)
+                avoidWorkingTooManyWeekends(constraintFactory)
         };
     }
 
@@ -55,7 +55,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
         .penalize("Overlap in passages", HardMediumSoftScore.ONE_HARD, Passage::getOverlapInMinutes);
     }
 
-    private Constraint respectEmployeeDayOffs(ConstraintFactory constraintFactory) {
+    Constraint respectEmployeeDayOffs(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .filter(Passage::isAssignedEmployeeOff)
                 .penalize("Employee is day Off", HardMediumSoftScore.ONE_HARD,
@@ -95,14 +95,23 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                         passage -> passage.getAssignedEmployee().getMaxContractualHours() * passage.getDurationInMn());
     }
 
-    Constraint ifEmployeeWorkedWeekendAtLeastTwoConsecutiveFreeDays(ConstraintFactory constraintFactory) {
+    Constraint avoidWorkingTooManyWeekends(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee,
-                        ConstraintCollectors.toList(p-> p))
-                .filter((employee, listD) -> employee.tooManyWeekends(listD))
+                        ConstraintCollectors.toList(p -> p))
+                .filter((employee, passages) -> employee.tooManyWeekends(passages))
                 .penalize("Too Many weekends worked", HardMediumSoftScore.ONE_HARD,
                         (employee, passages) -> employee.getMaxContractualHours() * passages.size());
     }
+
+//    Constraint weekendsShouldBeFull(ConstraintFactory constraintFactory) {
+//        return constraintFactory.from(Passage.class)
+//                .groupBy(Passage::getAssignedEmployee,
+//                        ConstraintCollectors.toList(p -> p))
+//                .filter((employee, passages) -> employee.ifWeekendWordaysOffListkedPlease2FreeDays(passages))
+//                .penalize("When weekend worked, do not work followind days", HardMediumSoftScore.ONE_HARD,
+//                        (employee, passages) -> employee.getMaxContractualHours() * passages.size());
+//    }
 
 
 }

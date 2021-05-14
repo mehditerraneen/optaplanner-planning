@@ -1,11 +1,15 @@
 package com.opefitoo.optaplannerplanning.sur.score;
 
+import com.opefitoo.optaplannerplanning.sur.model.DayOff;
 import com.opefitoo.optaplannerplanning.sur.model.Employee;
 import com.opefitoo.optaplannerplanning.sur.model.Passage;
 import com.opefitoo.optaplannerplanning.sur.model.Tournee;
+import com.thoughtworks.xstream.converters.time.LocalDateConverter;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -204,8 +208,52 @@ public class TourneeConstraintProviderTest {
         weekdnd10.setStartDateTime(LocalDateTime.parse("2021-05-30T09:00"));
         weekdnd10.setAssignedEmployee(e1);
 
-        constraintVerifier.verifyThat(TourneeConstraintProvider::ifEmployeeWorkedWeekendAtLeastTwoConsecutiveFreeDays)
+        constraintVerifier.verifyThat(TourneeConstraintProvider::avoidWorkingTooManyWeekends)
                 .given(weeknd1, weekdnd2, weekdnd3, weekdnd4, weekdnd5, weekdnd6, weekdnd7, weekdnd8, weekdnd9, weekdnd10).penalizes();
+
+    }
+
+
+//    @Test
+//    public void testRecuparationsApresWeekends(){
+//
+//        Employee e1 = new Employee();
+//        e1.setName("e1");
+//
+//        Passage weekdnd4 = new Passage();
+//        weekdnd4.setId(4L);
+//        weekdnd4.setStartDateTime(LocalDateTime.parse("2021-05-09T19:00"));
+//        weekdnd4.setAssignedEmployee(e1);
+//
+//        Passage weekday = new Passage();
+//        weekday.setId(5L);
+//        weekday.setStartDateTime(LocalDateTime.parse("2021-05-10T08:00"));
+//        weekday.setAssignedEmployee(e1);
+//
+//        constraintVerifier.verifyThat(TourneeConstraintProvider::weekendsShouldBeFull)
+//                .given(weekdnd4, weekday).penalizes();
+//
+//    }
+
+    @Test
+    public void testRespectEmployeeDayOffs(){
+
+        Employee e1 = new Employee();
+        e1.setName("e1");
+        e1.setDaysOffList(Lists.list(new DayOff(LocalDate.parse("2021-05-09"))));
+
+        Passage weekdnd4 = new Passage();
+        weekdnd4.setId(4L);
+        weekdnd4.setStartDateTime(LocalDateTime.parse("2021-05-09T19:00"));
+        weekdnd4.setAssignedEmployee(e1);
+
+        Passage weekday = new Passage();
+        weekday.setId(5L);
+        weekday.setStartDateTime(LocalDateTime.parse("2021-05-10T08:00"));
+        weekday.setAssignedEmployee(e1);
+
+        constraintVerifier.verifyThat(TourneeConstraintProvider::respectEmployeeDayOffs)
+                .given(weekdnd4, weekday).penalizes();
 
     }
 

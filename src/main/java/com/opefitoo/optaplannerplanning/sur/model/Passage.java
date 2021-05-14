@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
+import javax.persistence.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
+@Entity
 @PlanningEntity
 public class Passage extends AbstractPersistable {
 
@@ -15,13 +15,23 @@ public class Passage extends AbstractPersistable {
     private int durationInMn;
 
     @PlanningVariable(valueRangeProviderRefs = "employee")
+    @OneToOne(mappedBy = "passage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Employee assignedEmployee;
 
+    @OneToOne(mappedBy = "passage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Client client;
+
+    public Employee getAssignedEmployee() {
+        return assignedEmployee;
+    }
 
     public LocalDateTime getStartDateTime() {
         return startDateTime;
     }
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "tournee_id", nullable = false)
+    public Tournee tournee;
 
     public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
@@ -35,9 +45,7 @@ public class Passage extends AbstractPersistable {
         this.durationInMn = durationInMn;
     }
 
-    public Employee getAssignedEmployee() {
-        return assignedEmployee;
-    }
+
 
     public int getMonth() {
         return getLocalDate().getMonthValue();
@@ -71,7 +79,7 @@ public class Passage extends AbstractPersistable {
     public boolean isAssignedEmployeeOff() {
         if(assignedEmployee.getDaysOffList() == null || assignedEmployee.getDaysOffList().isEmpty())
             return false;
-        return (assignedEmployee.getDaysOffList().contains(getStartDateTime().toLocalDate()));
+        return (assignedEmployee.getDaysOffList().stream().anyMatch( d -> d.getLocalDate().equals(startDateTime.toLocalDate())));
     }
 
     @JsonIgnore
@@ -102,6 +110,10 @@ public class Passage extends AbstractPersistable {
 
     public LocalDate getLocalDate() {
         return startDateTime.toLocalDate();
+    }
+
+    public int getDayOfMonth() {
+        return getLocalDate().getDayOfMonth();
     }
 
     @Override
