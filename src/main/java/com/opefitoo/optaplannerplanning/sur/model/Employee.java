@@ -76,28 +76,18 @@ public class Employee {
     }
 
     public boolean ifWeekendWorkedPlease2FreeDays(List<Passage> passageList) {
-        if(passageList.size() < 3)
-            return false;
         Map<LocalDate, List<Passage>> passages = passageList
                 .stream().sorted(comparingInt(Passage::getDayOfMonth))
                 .collect(groupingBy(Passage::getLocalDate));
-        TreeSet<LocalDate> rr = new TreeSet<>(passages.keySet());
-        for (LocalDate passageDay:rr) {
-//            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-//                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
-//                return false;
-//            }
-//            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-//                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
-//                    && passages.get(passageDay.plusDays(2)) != null) {
-//                return false;
-//            }
-//            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-//                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
-//                    && passages.get(passageDay.plusDays(2)) == null
-//                    && passages.get(passageDay.plusDays(3)) != null) {
-//                return false;
-//            }
+        TreeSet<LocalDate> sortedPassageDays = new TreeSet<>(passages.keySet());
+        if(sortedPassageDays.size() < 3)
+            return false;
+        for (LocalDate passageDay:sortedPassageDays) {
+            // If SATURDAY worked then work Sunday as well
+            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
+                    && passages.get(passageDay.plusDays(1)) == null) {
+                return true;
+            }
             if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
                     && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
                     && passages.get(passageDay.plusDays(2)) == null
@@ -109,6 +99,7 @@ public class Employee {
                     && passages.get(passageDay.plusDays(2)) == null) {
                 return false;
             }
+            return true;
         }
         return true;
     }
