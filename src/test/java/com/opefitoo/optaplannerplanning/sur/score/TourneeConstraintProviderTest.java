@@ -212,26 +212,26 @@ public class TourneeConstraintProviderTest {
     }
 
 
-//    @Test
-//    public void testRecuparationsApresWeekends(){
-//
-//        Employee e1 = new Employee();
-//        e1.setName("e1");
-//
-//        Passage weekdnd4 = new Passage();
-//        weekdnd4.setId(4L);
-//        weekdnd4.setStartDateTime(LocalDateTime.parse("2021-05-09T19:00"));
-//        weekdnd4.setAssignedEmployee(e1);
-//
-//        Passage weekday = new Passage();
-//        weekday.setId(5L);
-//        weekday.setStartDateTime(LocalDateTime.parse("2021-05-10T08:00"));
-//        weekday.setAssignedEmployee(e1);
-//
-//        constraintVerifier.verifyThat(TourneeConstraintProvider::weekendsShouldBeFull)
-//                .given(weekdnd4, weekday).penalizes();
-//
-//    }
+    @Test
+    public void testRecuparationsApresWeekends(){
+
+        Employee e1 = new Employee();
+        e1.setName("e1");
+
+        Passage weekdnd4 = new Passage();
+        weekdnd4.setId(4L);
+        weekdnd4.setStartDateTime(LocalDateTime.parse("2021-05-09T19:00"));
+        weekdnd4.setAssignedEmployee(e1);
+
+        Passage weekday = new Passage();
+        weekday.setId(5L);
+        weekday.setStartDateTime(LocalDateTime.parse("2021-05-10T08:00"));
+        weekday.setAssignedEmployee(e1);
+
+        constraintVerifier.verifyThat(TourneeConstraintProvider::weekendsShouldBeFull)
+                .given(weekdnd4, weekday).penalizes();
+
+    }
 
     @Test
     public void testRespectEmployeeDayOffs(){

@@ -26,7 +26,8 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 employeeShouldWorkEitherMorningOrEvening(constraintFactory),
                 respectMaxNumberOfOPenDaysPerMonth(constraintFactory),
                 tryToAvoidVirtualEmployee(constraintFactory),
-                avoidWorkingTooManyWeekends(constraintFactory)
+                avoidWorkingTooManyWeekends(constraintFactory),
+                weekendsShouldBeFull(constraintFactory),
         };
     }
 
@@ -104,14 +105,14 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                         (employee, passages) -> employee.getMaxContractualHours() * passages.size());
     }
 
-//    Constraint weekendsShouldBeFull(ConstraintFactory constraintFactory) {
-//        return constraintFactory.from(Passage.class)
-//                .groupBy(Passage::getAssignedEmployee,
-//                        ConstraintCollectors.toList(p -> p))
-//                .filter((employee, passages) -> employee.ifWeekendWordaysOffListkedPlease2FreeDays(passages))
-//                .penalize("When weekend worked, do not work followind days", HardMediumSoftScore.ONE_HARD,
-//                        (employee, passages) -> employee.getMaxContractualHours() * passages.size());
-//    }
+    Constraint weekendsShouldBeFull(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(Passage.class)
+                .groupBy(Passage::getAssignedEmployee,
+                        ConstraintCollectors.toList(p -> p))
+                .filter((employee, passages) -> employee.ifWeekendWorkedPlease2FreeDays(passages))
+                .penalize("When weekend worked, do not work followind days", HardMediumSoftScore.ONE_HARD,
+                        (employee, passages) -> employee.getMaxContractualHours() * passages.size());
+    }
 
 
 }

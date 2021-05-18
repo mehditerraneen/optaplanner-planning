@@ -104,6 +104,10 @@ public class Passage extends AbstractPersistable {
         return startDateTime.toLocalDate();
     }
 
+    public int getDayOfMonth() {
+        return getLocalDate().getDayOfMonth();
+    }
+
     @Override
     public String toString() {
         return "Passage{" +

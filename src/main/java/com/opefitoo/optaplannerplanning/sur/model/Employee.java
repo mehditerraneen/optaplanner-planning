@@ -3,11 +3,13 @@ package com.opefitoo.optaplannerplanning.sur.model;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
 
 
@@ -71,6 +73,43 @@ public class Employee {
         Map<LocalDate, List<Passage>> passages = passageList.stream().filter(Passage::isWeekend)
                 .collect(groupingBy(Passage::getLocalDate));
         return passages.size() > 6 ? true:false;
+    }
+
+    public boolean ifWeekendWorkedPlease2FreeDays(List<Passage> passageList) {
+        Set<Passage> r = passageList.stream().sorted(comparingInt(Passage::getDayOfMonth)).collect(Collectors.toSet());
+        Map<LocalDate, List<Passage>> passages = r
+                .stream().sorted(comparingInt(Passage::getDayOfMonth))
+                .collect(groupingBy(Passage::getLocalDate));
+        TreeSet<LocalDate> rr = new TreeSet<>(passages.keySet());
+        for (LocalDate passageDay:rr) {
+//            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
+//                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
+//                return false;
+//            }
+//            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
+//                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
+//                    && passages.get(passageDay.plusDays(2)) != null) {
+//                return false;
+//            }
+//            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
+//                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
+//                    && passages.get(passageDay.plusDays(2)) == null
+//                    && passages.get(passageDay.plusDays(3)) != null) {
+//                return false;
+//            }
+            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
+                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
+                    && passages.get(passageDay.plusDays(2)) == null
+                    && passages.get(passageDay.plusDays(3)) == null) {
+                return false;
+            }
+            if(passageDay.getDayOfWeek() == DayOfWeek.SUNDAY
+                    && passages.get(passageDay.plusDays(1)) == null
+                    && passages.get(passageDay.plusDays(2)) == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
