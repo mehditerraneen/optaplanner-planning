@@ -76,8 +76,9 @@ public class Employee {
     }
 
     public boolean ifWeekendWorkedPlease2FreeDays(List<Passage> passageList) {
-        Set<Passage> r = passageList.stream().sorted(comparingInt(Passage::getDayOfMonth)).collect(Collectors.toSet());
-        Map<LocalDate, List<Passage>> passages = r
+        if(passageList.size() < 3)
+            return false;
+        Map<LocalDate, List<Passage>> passages = passageList
                 .stream().sorted(comparingInt(Passage::getDayOfMonth))
                 .collect(groupingBy(Passage::getLocalDate));
         TreeSet<LocalDate> rr = new TreeSet<>(passages.keySet());
