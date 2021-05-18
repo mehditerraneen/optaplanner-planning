@@ -3,45 +3,29 @@ package com.opefitoo.optaplannerplanning.sur.model;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
-import javax.persistence.*;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
 
-@Entity
-public class Employee extends AbstractPersistable {
+
+public class Employee {
+
+
+    @Value("classpath:data/holidays.json")
+    Resource holidayResource;
 
     private String name;
 
     private boolean virtual;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee")
-    private List<DayOff> daysOffList;
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinTable(name = "employee_clients_restrictions",
-            joinColumns = {
-                    @JoinColumn(name = "client_id", referencedColumnName = "id",
-                            nullable = false, updatable = false)},
-            inverseJoinColumns = {
-                    @JoinColumn(name = "employee_id", referencedColumnName = "id",
-                            nullable = false, updatable = false)})
+    private List<LocalDate> daysOffList;
 
     private List<Client> clientsWhereCannotGo;
 
     private int maxContractualHours;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "tournee_id", nullable = false)
-    public Tournee tournee;
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "passage_id", nullable = false)
-    public Passage passage;
 
     public String getName() {
         return name;
@@ -59,11 +43,11 @@ public class Employee extends AbstractPersistable {
         this.maxContractualHours = maxContractualHours;
     }
 
-    public List<DayOff> getDaysOffList() {
+    public List<LocalDate> getDaysOffList() {
         return daysOffList;
     }
 
-    public void setDaysOffList(List<DayOff> daysOffList) {
+    public void setDaysOffList(List<LocalDate> daysOffList) {
         this.daysOffList = daysOffList;
     }
 
@@ -88,37 +72,6 @@ public class Employee extends AbstractPersistable {
                 .collect(groupingBy(Passage::getLocalDate));
         return passages.size() > 6 ? true:false;
     }
-
-    public boolean ifWeekendWorkedPlease2FreeDays(List<Passage> passageList){
-        Map<LocalDate, List<Passage>> passages = passageList
-                .stream().sorted(comparingInt(Passage::getDayOfMonth))
-                .collect(groupingBy(Passage::getLocalDate));
-        for (LocalDate passageDay:passages.keySet()) {
-            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() != DayOfWeek.SUNDAY) {
-                return false;
-            }
-            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
-            && passages.get(passageDay.plusDays(2)) != null) {
-                return false;
-            }
-            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
-                    && passages.get(passageDay.plusDays(2)) == null
-            && passages.get(passageDay.plusDays(3)) != null) {
-                return false;
-            }
-            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
-                    && passages.get(passageDay.plusDays(2)) == null
-                    && passages.get(passageDay.plusDays(3)) == null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     @Override
     public boolean equals(Object o) {

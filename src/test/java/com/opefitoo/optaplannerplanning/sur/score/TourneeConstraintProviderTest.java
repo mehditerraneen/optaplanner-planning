@@ -1,10 +1,8 @@
 package com.opefitoo.optaplannerplanning.sur.score;
 
-import com.opefitoo.optaplannerplanning.sur.model.DayOff;
 import com.opefitoo.optaplannerplanning.sur.model.Employee;
 import com.opefitoo.optaplannerplanning.sur.model.Passage;
 import com.opefitoo.optaplannerplanning.sur.model.Tournee;
-import com.thoughtworks.xstream.converters.time.LocalDateConverter;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
@@ -240,7 +238,7 @@ public class TourneeConstraintProviderTest {
 
         Employee e1 = new Employee();
         e1.setName("e1");
-        e1.setDaysOffList(Lists.list(new DayOff(LocalDate.parse("2021-05-09"))));
+        e1.setDaysOffList(Lists.list(LocalDate.parse("2021-05-09")));
 
         Passage weekdnd4 = new Passage();
         weekdnd4.setId(4L);

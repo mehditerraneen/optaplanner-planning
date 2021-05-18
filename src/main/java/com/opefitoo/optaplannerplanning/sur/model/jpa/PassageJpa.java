@@ -1,65 +1,41 @@
-package com.opefitoo.optaplannerplanning.sur.model;
+package com.opefitoo.optaplannerplanning.sur.model.jpa;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
+import javax.persistence.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
-@PlanningEntity
-public class Passage extends AbstractPersistable {
+@Getter
+@Setter
+@Entity
+public class PassageJpa extends AbstractPersistableJpa {
 
     private LocalDateTime startDateTime;
     private int durationInMn;
 
-    @PlanningVariable(valueRangeProviderRefs = "employee")
-    private Employee assignedEmployee;
+    @OneToOne(mappedBy = "passage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private EmployeeJpa assignedEmployee;
 
-    private Client client;
+    @OneToOne(mappedBy = "passage", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private ClientJpa client;
 
-    public LocalDateTime getStartDateTime() {
-        return startDateTime;
-    }
-
-    public void setStartDateTime(LocalDateTime startDateTime) {
-        this.startDateTime = startDateTime;
-    }
-
-    public int getDurationInMn() {
-        return durationInMn;
-    }
-
-    public void setDurationInMn(int durationInMn) {
-        this.durationInMn = durationInMn;
-    }
-
-    public Employee getAssignedEmployee() {
-        return assignedEmployee;
-    }
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "tournee_id", nullable = false)
+    public TourneeJpa tournee;
 
     public int getMonth() {
         return getLocalDate().getMonthValue();
-    }
-
-    public void setAssignedEmployee(Employee assignedEmployee) {
-        this.assignedEmployee = assignedEmployee;
     }
 
     public LocalDateTime calculateEndTime() {
         return this.startDateTime.plusMinutes(this.durationInMn);
     }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public int getOverlapInMinutes(Passage other) {
+    public int getOverlapInMinutes(PassageJpa other) {
         if (this == other) {
             return durationInMn;
         }
@@ -71,7 +47,7 @@ public class Passage extends AbstractPersistable {
     public boolean isAssignedEmployeeOff() {
         if(assignedEmployee.getDaysOffList() == null || assignedEmployee.getDaysOffList().isEmpty())
             return false;
-        return (assignedEmployee.getDaysOffList().contains(getStartDateTime().toLocalDate()));
+        return (assignedEmployee.getDaysOffList().stream().anyMatch( d -> d.getLocalDate().equals(startDateTime.toLocalDate())));
     }
 
     @JsonIgnore
@@ -102,6 +78,10 @@ public class Passage extends AbstractPersistable {
 
     public LocalDate getLocalDate() {
         return startDateTime.toLocalDate();
+    }
+
+    public int getDayOfMonth() {
+        return getLocalDate().getDayOfMonth();
     }
 
     @Override

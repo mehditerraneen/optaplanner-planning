@@ -1,9 +1,11 @@
 package com.opefitoo.optaplannerplanning.sur.score;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opefitoo.optaplannerplanning.sur.model.Tournee;
-import com.opefitoo.optaplannerplanning.sur.repo.TourneeRepository;
+import com.opefitoo.optaplannerplanning.sur.model.simplifiedjpa.SolutionContainer;
+import com.opefitoo.optaplannerplanning.sur.model.simplifiedjpa.SolutionContainerRepo;
+import org.jobrunr.scheduling.BackgroundJob;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +31,7 @@ public class TrouneeSolverController {
     private SolverManager<Tournee, UUID> solverManager;
 
     @Autowired
-    private SolverManager<Tournee, Long> batchSolverManager;
-
-    @Autowired
-    private TourneeRepository tourneeRepository;
+    private SolutionContainerRepo solutionContainerRepo;
 
     @PostMapping("/solve")
     public Tournee solve(@RequestBody Tournee problem) {
@@ -91,11 +88,19 @@ public class TrouneeSolverController {
 
 
     @PostMapping("/batch-solve")
-    public void batchSolve(Tournee problem) {
-        Long id = tourneeRepository.findMaxId();
-        batchSolverManager.solveAndListen(id == null ? 1L :  id+1,
-                tourneeRepository::anotherFindById,
-                tourneeRepository::save);
+    public String batchSolve(@RequestBody Tournee problem) {
+        BackgroundJob.enqueue(() -> doSolveAndSave(problem));
+        return "Job launched";
+    }
+
+    public void doSolveAndSave(Tournee problem) throws ExecutionException, InterruptedException, JsonProcessingException {
+        UUID problemId = UUID.randomUUID();
+        SolverJob<Tournee, UUID> solverJob = solverManager.solve(problemId, problem);
+        Tournee   solution = solverJob.getFinalBestSolution();
+        SolutionContainer solutionContainer = new SolutionContainer("mai",
+                "2021",
+                solution.getScore().toString(), new ObjectMapper().writeValueAsString(solution));
+        solutionContainerRepo.save(solutionContainer);
     }
 
 }

@@ -1,20 +1,9 @@
 package com.opefitoo.optaplannerplanning.sur.model;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
-@Entity
 public class Client extends AbstractPersistable {
 
     private String name;
-
-    @ManyToMany(mappedBy = "clientsWhereCannotGo", fetch = FetchType.LAZY)
-    private Set<Employee> employeeCannotCome = new HashSet<>();
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "passage_id", nullable = false)
-    private Passage passage;
 
     public String getName() {
         return name;
@@ -22,14 +11,6 @@ public class Client extends AbstractPersistable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<Employee> getEmployeeCannotCome() {
-        return employeeCannotCome;
-    }
-
-    public void setEmployeeCannotCome(Set<Employee> employeeCannotCome) {
-        this.employeeCannotCome = employeeCannotCome;
     }
 
     @Override
