@@ -82,25 +82,32 @@ public class Employee {
         TreeSet<LocalDate> sortedPassageDays = new TreeSet<>(passages.keySet());
         if(sortedPassageDays.size() < 3)
             return false;
-        for (LocalDate passageDay:sortedPassageDays) {
-            // If SATURDAY worked then work Sunday as well
-            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-                    && passages.get(passageDay.plusDays(1)) == null) {
-                return true;
+        if(sortedPassageDays.size() > 6)
+        {
+            for (LocalDate passageDay:sortedPassageDays) {
+                // If SATURDAY worked then work Sunday as well
+                if (passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
+                        && passages.get(passageDay.plusDays(1)) == null) {
+                    return true;
+                }
+                if (passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
+                        && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
+                        && passages.get(passageDay.plusDays(2)) == null
+                        && passages.get(passageDay.plusDays(6)) == null
+                        && passages.get(passageDay.plusDays(7)) == null) {
+                    return false;
+                }
+                if (passageDay.getDayOfWeek() == DayOfWeek.SUNDAY
+                        && passages.get(passageDay.plusDays(1)) == null
+                        && passages.get(passageDay.plusDays(2)) == null
+                        && passages.get(passageDay.plusDays(6)) == null
+                        && passages.get(passageDay.plusDays(7)) == null) {
+                    return false;
+                }
+                //return true;
             }
-            if(passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
-                    && passages.get(passageDay.plusDays(1)).get(0).getLocalDate().getDayOfWeek() == DayOfWeek.SUNDAY
-                    && passages.get(passageDay.plusDays(2)) == null
-                    && passages.get(passageDay.plusDays(3)) == null) {
-                return false;
-            }
-            if(passageDay.getDayOfWeek() == DayOfWeek.SUNDAY
-                    && passages.get(passageDay.plusDays(1)) == null
-                    && passages.get(passageDay.plusDays(2)) == null) {
-                return false;
-            }
-            return true;
         }
+
         return true;
     }
 
