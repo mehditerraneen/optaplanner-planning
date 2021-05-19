@@ -14,7 +14,8 @@ import javax.persistence.Entity;
 @Entity
 public class SolutionContainer extends AbstractPersistableJpa {
 
-    String month, year, score;
+    int month, year;
+    String score;
 
     @Column(columnDefinition = "jsonb")
     @Type(type = "jsonb")

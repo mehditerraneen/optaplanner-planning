@@ -97,9 +97,10 @@ public class TrouneeSolverController {
         UUID problemId = UUID.randomUUID();
         SolverJob<Tournee, UUID> solverJob = solverManager.solve(problemId, problem);
         Tournee   solution = solverJob.getFinalBestSolution();
-        SolutionContainer solutionContainer = new SolutionContainer("mai",
-                "2021",
-                solution.getScore().toString(), new ObjectMapper().writeValueAsString(solution));
+        SolutionContainer solutionContainer = new SolutionContainer(problem.getMonth(),
+                problem.getYear(),
+                solution.getScore().toString(),
+                new ObjectMapper().writeValueAsString(solution));
         solutionContainerRepo.save(solutionContainer);
     }
 

@@ -1,11 +1,11 @@
 package com.opefitoo.optaplannerplanning.sur.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.optaplanner.core.api.domain.solution.*;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @PlanningSolution
@@ -18,9 +18,13 @@ public class Tournee {
     @ValueRangeProvider(id = "employee")
     private List<Employee> employees;
 
-//    @ProblemFactProperty
-//    @ValueRangeProvider(id = "planningResource")
-//    private PlanningResource planningResource;
+    @Getter
+    @Setter
+    private int year;
+
+    @Getter
+    @Setter
+    private int month;
 
     @PlanningScore
     private HardMediumSoftScore score;
