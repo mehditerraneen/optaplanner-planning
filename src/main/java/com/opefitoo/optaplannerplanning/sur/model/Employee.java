@@ -104,10 +104,15 @@ public class Employee {
                         && passages.get(passageDay.plusDays(7)) == null) {
                     return false;
                 }
-                //return true;
+                if (passageDay.getDayOfWeek() == DayOfWeek.SUNDAY
+                        && passages.get(passageDay.plusDays(1)) != null
+                        && passages.get(passageDay.plusDays(2)) != null
+                        && passages.get(passageDay.plusDays(6)) != null
+                        && passages.get(passageDay.plusDays(7)) != null) {
+                    return true;
+                }
             }
         }
-
         return true;
     }
 
