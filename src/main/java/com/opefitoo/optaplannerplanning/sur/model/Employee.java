@@ -84,7 +84,9 @@ public class Employee {
             return false;
         if(sortedPassageDays.size() > 6)
         {
-            for (LocalDate passageDay:sortedPassageDays) {
+            int position = 0;
+            //for (LocalDate passageDay:sortedPassageDays) {
+                LocalDate passageDay = sortedPassageDays.first();
                 // If SATURDAY worked then work Sunday as well
                 if (passageDay.getDayOfWeek() == DayOfWeek.SATURDAY
                         && passages.get(passageDay.plusDays(1)) == null) {
@@ -100,8 +102,8 @@ public class Employee {
                 if (passageDay.getDayOfWeek() == DayOfWeek.SUNDAY
                         && passages.get(passageDay.plusDays(1)) == null
                         && passages.get(passageDay.plusDays(2)) == null
-                        && passages.get(passageDay.plusDays(6)) == null
-                        && passages.get(passageDay.plusDays(7)) == null) {
+                        && passages.get(passageDay.plusDays(7)) == null
+                        && passages.get(passageDay.plusDays(8)) == null) {
                     return false;
                 }
                 if (passageDay.getDayOfWeek() == DayOfWeek.SUNDAY
@@ -112,7 +114,8 @@ public class Employee {
                     return true;
                 }
             }
-        }
+            //position++;
+        //}
         return true;
     }
 
