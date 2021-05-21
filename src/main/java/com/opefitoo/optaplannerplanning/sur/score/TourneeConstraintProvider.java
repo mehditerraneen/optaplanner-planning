@@ -34,7 +34,8 @@ public class TourneeConstraintProvider implements ConstraintProvider {
      Constraint minimizeHoursPerEmployee(ConstraintFactory constraintFactory) {
         return constraintFactory.from(Passage.class)
                 .groupBy(Passage::getAssignedEmployee, sum(Passage::getDurationInMn))
-                .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContractualHours()))
+                .filter(((employee, durationInMn) -> durationInMn > employee.getMaxContractualHours() + employee.getMaxContractualHours() * 0.10))
+                .filter(((employee, durationInMn) -> durationInMn < employee.getMaxContractualHours() - employee.getMaxContractualHours() * 0.10))
                 .penalize("totalMaxHours", HardMediumSoftScore.ONE_HARD,
                         ((employee, durationInMn) -> pow(abs(durationInMn - employee.getMaxContractualHours()), 2)));
     }
@@ -75,7 +76,7 @@ public class TourneeConstraintProvider implements ConstraintProvider {
                 equal(Passage::getLocalDate),
                 equal(Passage::getAssignedEmployee))
                 .filter((passage1,
-                         passage2) -> (passage1.isNotWeekend() && passage1.isMorningShift() && !passage2.isMorningShift()))
+                         passage2) -> (passage1.isNotWeekendNorBankHoliday() && passage1.isMorningShift() && !passage2.isMorningShift()))
                 .penalize("Pas travailler les coupés", HardMediumSoftScore.ONE_HARD,
                         (passage1, passage2) -> (passage1.getDurationInMn() + passage2.getDurationInMn())
                                 * passage1.getAssignedEmployee().getMaxContractualHours());

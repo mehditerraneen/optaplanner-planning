@@ -6,8 +6,6 @@ import org.springframework.core.io.Resource;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
@@ -70,7 +68,7 @@ public class Employee {
     }
 
     public boolean tooManyWeekends(List<Passage> passageList) {
-        Map<LocalDate, List<Passage>> passages = passageList.stream().filter(Passage::isWeekend)
+        Map<LocalDate, List<Passage>> passages = passageList.stream().filter(Passage::isWeekendOrBankHoliday)
                 .collect(groupingBy(Passage::getLocalDate));
         return passages.size() > 6 ? true:false;
     }
