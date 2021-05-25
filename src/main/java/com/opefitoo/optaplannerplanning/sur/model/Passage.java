@@ -1,17 +1,17 @@
 package com.opefitoo.optaplannerplanning.sur.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.opefitoo.optaplannerplanning.sur.config.HolidaysServiceNonSpring;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @PlanningEntity
 public class Passage extends AbstractPersistable {
 
     private LocalDateTime startDateTime;
+
     private int durationInMn;
 
     @PlanningVariable(valueRangeProviderRefs = "employee")
@@ -90,14 +90,16 @@ public class Passage extends AbstractPersistable {
     }
 
     @JsonIgnore
-    public boolean isWeekend() {
-        if(getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY || getStartDateTime().getDayOfWeek() == DayOfWeek.SUNDAY)
+    public boolean isWeekendOrBankHoliday() {
+        if(getStartDateTime().getDayOfWeek() == DayOfWeek.SATURDAY
+                || getStartDateTime().getDayOfWeek() == DayOfWeek.SUNDAY
+        || HolidaysServiceNonSpring.createInstance().isBankHoliday(getStartDateTime().toLocalDate()))
             return true;
         return false;
     }
 
-    public boolean isNotWeekend() {
-        return !isWeekend();
+    public boolean isNotWeekendNorBankHoliday() {
+        return !isWeekendOrBankHoliday();
     }
 
     public LocalDate getLocalDate() {
