@@ -9,6 +9,8 @@ import org.jobrunr.scheduling.BackgroundJob;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,9 @@ public class TrouneeSolverController {
 
     @Autowired
     private SolutionContainerRepo solutionContainerRepo;
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     @PostMapping("/solve")
     public Tournee solve(@RequestBody Tournee problem) {
@@ -101,7 +106,14 @@ public class TrouneeSolverController {
                 problem.getYear(),
                 solution.getScore().toString(),
                 new ObjectMapper().writeValueAsString(solution));
-        solutionContainerRepo.save(solutionContainer);
+        SolutionContainer solCont = solutionContainerRepo.save(solutionContainer);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("noanswer@opefitoo.com");
+        message.setTo("mehdi@benammar.com");
+        message.setSubject("Batch processing finished");
+        message.setText("A solution have been found for "+ solCont.getMonth() +"-" + solCont.getYear() +" id= " + solCont.getId());
+        emailSender.send(message);
     }
 
 }
